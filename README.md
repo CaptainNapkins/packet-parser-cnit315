@@ -11,3 +11,11 @@ Snappier name coming soon
 Hey matthew
 
 new branch!
+
+
+## Notes
+- libpcap: https://www.tcpdump.org/pcap.html
+- https://www.tcpdump.org/
+- http://yuba.stanford.edu/~casado/pcap/section1.html
+- https://vichargrave.github.io/programming/develop-a-packet-sniffer-with-libpcap/
+
