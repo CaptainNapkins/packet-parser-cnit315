@@ -8,3 +8,5 @@ Snappier name coming soon
 2. When done, commit to branch and push changes
 3. Then open a pull request to be merged into main
 
+Hey matthew
+
