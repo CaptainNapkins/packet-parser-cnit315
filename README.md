@@ -10,7 +10,7 @@ This is the CNIT 315 final project. This network packet parser can output to a f
 
 2. Run the program:
     ```
-    ./packet_manipulation
+    ./wire_minnow
     ```
 
 3. Follow the on-screen instructions to interact with the program:
