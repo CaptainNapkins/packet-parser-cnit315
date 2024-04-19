@@ -28,40 +28,69 @@ void stopCapture();
 int validateInput(const char *input);
 
 int main() {
-    // Creates flag to end whole code loop
     int endFlag = 0;
     while (endFlag == 0) {
-        printf("Menu:\n");
+        printf("Main Menu:\n");
         printf("1. List Interfaces\n");
         printf("2. Add Interface\n");
-        printf("3. Start Capture\n");
-        printf("4. Exit\n");
-        int choice;
+        printf("3. Exit\n");
+        int mainChoice;
         printf("Enter your choice: ");
-        scanf("%d", &choice);
-        switch(choice) {
+        scanf("%d", &mainChoice);
+        switch(mainChoice) {
             case 1:
                 listInterfaces();
                 break;
             case 2:
-                // Implement function to add interface
+                addInterface();
                 break;
-            case 3: {
-                char *selectedInterface = selectInterface();
-                if (selectedInterface != NULL) {
-                    startCapture(selectedInterface);
-                }
-                break;
-            }
-            case 4:
+            case 3:
                 printf("Exiting program.\n");
                 endFlag = 1;
                 break;
             default:
-                printf("Invalid choice. Please enter a number between 1 and 4.\n");
+                printf("Invalid choice. Please enter a number between 1 and 3.\n");
         }
     }
     return 0;
+}
+
+void listInterfaces() {
+    // Implement function to list available interfaces
+}
+
+void addInterface() {
+    // Implement function to add interface
+}
+
+void startCapture(const char *interface) {
+    char errbuf[PCAP_ERRBUF_SIZE]; // Error buffer for libpcap
+    pcap_t *handle; // Packet capture handle
+
+    handle = pcap_open_live(interface, SNAP_LEN, 1, TIMEOUT_MS, errbuf); // Open the network interface for packet capture
+    if (handle == NULL) {
+        fprintf(stderr, "Error opening interface %s: %s\n", interface, errbuf);
+        return;
+    }
+
+    printf("Capturing packets on interface %s...\n", interface);
+
+    // Start capturing packets indefinitely
+    pcap_loop(handle, -1, packetHandler, NULL);
+
+    pcap_close(handle); // Close the packet capture handle when done
+}
+
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet) {
+    // Process the captured packet here
+    printf("Packet captured: Length = %d\n", pkthdr->len);
+
+    // Reconstruct and process the packet
+    reconstructPacket(packet, *pkthdr);
+}
+
+void reconstructPacket(const u_char *packet, struct pcap_pkthdr packet_header) {
+    // Implement packet reconstruction logic here
 }
 
 void displayMenu(const char *interface) {
@@ -157,7 +186,7 @@ int validateInput(const char *input) {
     // Implement input validation logic here
     // Example: Validate IP addresses, port numbers, packet data, etc.
     // Return 1 if input is valid, 0 otherwise
-    return 1; // Placeholder for demonstration
+    return 1; // Placeholder 
 }
 
 void listInterfaces() {
