@@ -14,9 +14,20 @@ This is the CNIT 315 final project. This network packet parser can output to a f
     ```
 
 3. Follow the on-screen instructions to interact with the program:
-    - Start/Stop packet capture
-    - Modify packet behavior
-    - Exit the program
+       - List Interfaces
+       - Add Interface
+       - Exit
+
+4. The user may specify the data once an interface is selected:
+       - Display Whole Capture
+       - Display ICMP Packets
+       - Display UDP Packets
+       - Display TCP Packets
+       - Go Back
+   
+6. In a separate menu, users can start the capture or return if they make a mistake:
+       - Start Capture
+       - Go Back
 
 ## Requirements
 - C compiler (e.g., GCC)
