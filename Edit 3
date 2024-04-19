@@ -30,8 +30,8 @@ int main() {
     int endFlag = 0;
     while (endFlag == 0) {
         printf("Main Menu:\n");
-        printf("1. List Interfaces\n");
-        printf("2. Add Interface\n");
+        printf("1. List Destination IPs\n");
+        printf("2. Add Destination IP\n");
         printf("3. Exit\n");
         int mainChoice;
         printf("Enter your choice: ");
