@@ -15,8 +15,8 @@ This is the CNIT 315 final project. This network packet parser can output to a f
 
 3. Follow the on-screen instructions to interact with the program:
    ``` 
-       - List Interfaces 
-       - Add Interface 
+       - List Destination IPs 
+       - Add Destination IP
        - Exit 
    ```
 4. The user may specify the data once an interface is selected:
