@@ -24,7 +24,6 @@ void displayTCP(const char *interface);
 void listInterfaces();
 char* selectInterface();
 int startCapture(const char *interface);
-void stopCapture();
 int validateInput(const char *input);
 
 int main() {
