@@ -10,6 +10,10 @@
 #define SNAP_LEN 65535 // Maximum packet size to capture
 #define TIMEOUT_MS 1000 // Timeout in milliseconds for pcap_next_ex
 
+pcap_t* handle;
+int linkhdrlen;
+int packets;
+
 // Function prototypes
 void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet);
 void capturePackets(const char *interface);
