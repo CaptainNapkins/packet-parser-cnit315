@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <pcap.h>
+
+#define SNAP_LEN 65535 // Maximum packet size to capture
+#define TIMEOUT_MS 1000 // Timeout in milliseconds for pcap_next_ex
+
+// Function prototypes
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet);
+void capturePackets(const char *interface);
+void modifyAndSendPacket(const u_char *packet, struct pcap_pkthdr packet_header);
+void reconstructPacket(const u_char *packet, struct pcap_pkthdr packet_header);
+int validateInput(const char *input);
+void sanitizeData(char *data);
+void handleRawSocket();
+int queryInterface();
+char *queryInterface();
+
+int main() {
+    // Creates flag to end whole code loop
+    int endFlag = 0;
+    // Whole code loop
+    while (endFlag == 0) {
+        // Gets user interface result
+        int result = queryInterface();
+        printf("You entered: %d\n", result);
+        // Checks user end program result
+        if (result == 0) {
+            printf("Goodbye.\n");
+            // Sets flag to 1, ending program
+            endFlag = 1;
+        } else {
+            // Specify the network interface to capture packets from
+            const char *interface = "XXX"; // Change this to the right interface
+            // Call capturePackets() to start capturing packets
+            capturePackets(interface);
+        }
+    }
+    return 0;
+}
+
+// Function to capture packets from the specified network interface
+void capturePackets(const char *interface) {
+    char errbuf[PCAP_ERRBUF_SIZE]; // Error buffer for libpcap
+    pcap_t *handle; // Packet capture handle
+
+    handle = pcap_open_live(interface, SNAP_LEN, 1, TIMEOUT_MS, errbuf); // Open the network interface for packet capture
+    if (handle == NULL) {
+        fprintf(stderr, "Error opening interface %s: %s\n", interface, errbuf);
+        return;
+    }
+
+    printf("Capturing packets on interface %s...\n", interface);
+
+    pcap_loop(handle, -1, packetHandler, NULL); // Start capturing packets indefinitely
+
+    pcap_close(handle); // Close the packet capture handle when done
+}
+
+// Callback function to handle each captured packet
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet) {
+    // Process the captured packet here
+    printf("Packet captured: Length = %d\n", pkthdr->len);
+
+    // Reconstruct and process the packet
+    reconstructPacket(packet, *pkthdr);
+
+    // Securely handle raw socket
+    handleRawSocket();
+}
+
+// Function to reconstruct and process the captured packet
+void reconstructPacket(const u_char *packet, struct pcap_pkthdr packet_header) {
+    // Implement packet reconstruction logic here
+    // Example: Reassemble fragmented packets, extract data from encapsulated protocols
+    // For TCP streams, you can use libraries like libtins or implement your own logic
+    // Extract HTTP content from TCP streams and display or save it
+}
+
+// Function to validate user inputs
+int validateInput(const char *input) {
+    // Implement input validation logic here
+    // Example: Validate IP addresses, port numbers, packet data, etc.
+    // Return 1 if input is valid, 0 otherwise
+    return 1; // Placeholder for demonstration
+}
+
+// Function to sanitize data
+void sanitizeData(char *data) {
+    // Implement data sanitization logic here
+}
+
+// Function to securely handle raw sockets
+void handleRawSocket() {
+    // Implement secure handling of raw sockets
+}
+
+// Function to query the user's requested interface
+int queryInterface() {
+    int usr;
+    printf("Enter an interface (0 to quit): ");
+    scanf("%d", &usr);
+    return usr;
+}
+
+// Function to dynamically query the user's requested interface
+char *queryInterface() {
+    char *usr = NULL;
+    for (int c = 3; c > 0; c--) { // Runs 3 times to attempt memory alloc, if it fails 3 times ends program
+       
+        usr = malloc(sizeof(char) * 50); // sizeof(char) gets size per char (1 byte) malloc allocates * 50 times  // creates dynamic memory for the usr response
+        if (usr == NULL) { // If alloc is NULL, nothing was allocated meaning a failure
+            printf("Memory allocation failed\nRetrying...\n");
+        } else {
+            break; // Successful alloc exits for
+        }
+    }
+    if (usr == NULL) { // Ends program if memory alloc fails 3 times, returns 1
+        printf("Memory allocation failed\nEnding.\n");
+        exit(1);
+    }
+
+    printf("Enter an interface (q to quit): ");
+    scanf("%s", usr);
+    return usr;
+}
