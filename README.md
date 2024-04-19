@@ -5,7 +5,7 @@ This is the CNIT 315 final project. This network packet parser can output to a f
 
 1. Compile the program using a C compiler (e.g., GCC):
     ```
-    gcc -o packet_manipulation packet_manipulation.c -lpcap
+    gcc -o wire_minnow wire_minnow.c -lpcap
     ```
 
 2. Run the program:
