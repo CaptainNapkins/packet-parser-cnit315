@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <pcap.h>
+
+#define SNAP_LEN 65535 // Maximum packet size to capture
+#define TIMEOUT_MS 1000 // Timeout in milliseconds for pcap_next_ex
+
+// Function prototypes
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet);
+void capturePackets(const char *interface);
+void modifyAndSendPacket(const u_char *packet, struct pcap_pkthdr packet_header);
+void reconstructPacket(const u_char *packet, struct pcap_pkthdr packet_header);
+int validateInput(const char *input);
+void sanitizeData(char *data);
+void handleRawSocket();
+
+int main() {
+    cconst char *interface = "XXX"; // Specify the network interface to capture packets from, Change this to the right interface
+
+    printf("=== Packet Manipulation Program ===\n");
+    printf("Commands:\n");
+    printf("1. Start Capture\n");
+    printf("2. Stop Capture\n");
+    printf("3. Modify Packet Behavior\n");
+    printf("4. Exit\n");
+
+    int choice;
+    do {
+        printf("Enter your choice (1-4): ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                capturePackets(interface); // Start packet capture
+                break;
+            case 2:
+                printf("Capture stopped.\n");
+
+                // Add logic to stop packet capture if needed
+
+                break;
+            case 3:
+                printf("Modifying packet behavior...\n");
+
+                // Add logic to modify packet behavior
+
+                break;
+            case 4:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please enter a number between 1 and 4.\n");
+        }
+    } while(choice != 4);
+
+    return 0;
+}
+
+// Function to capture packets from the specified network interface
+void capturePackets(const char *interface) {
+    char errbuf[PCAP_ERRBUF_SIZE]; // Error buffer for libpcap
+    pcap_t *handle; // Packet capture handle
+
+    handle = pcap_open_live(interface, SNAP_LEN, 1, TIMEOUT_MS, errbuf); // Open the network interface for packet capture
+    if (handle == NULL) {
+        fprintf(stderr, "Error opening interface %s: %s\n", interface, errbuf);
+        return;
+    }
+
+    printf("Capturing packets on interface %s...\n", interface);
+
+    pcap_loop(handle, -1, packetHandler, NULL); // Start capturing packets indefinitely
+
+    pcap_close(handle); // Close the packet capture handle when done
+}
+
+// Callback function to handle each captured packet
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet) {
+    // Process the captured packet here
+    printf("Packet captured: Length = %d\n", pkthdr->len);
+
+    // Reconstruct and process the packet
+    reconstructPacket(packet, *pkthdr);
+
+    // Securely handle raw socket
+    handleRawSocket();
+}
+
+// Function to reconstruct and process the captured packet
+void reconstructPacket(const u_char *packet, struct pcap_pkthdr packet_header) {
+    // Implement packet reconstruction logic here
+    // Example: Reassemble fragmented packets, extract data from encapsulated protocols
+    // For TCP streams, you can use libraries like libtins or implement your own logic
+    // Extract HTTP content from TCP streams and display or save it
+}
+
+// Function to validate user inputs
+int validateInput(const char *input) {
+    // Implement input validation logic here
+    // Example: Validate IP addresses, port numbers, packet data, etc.
+    // Return 1 if input is valid, 0 otherwise
+    return 1; // Placeholder for demonstration
+}
+
+// Function to sanitize data
+void sanitizeData(char *data) {
+    // Implement data sanitization logic here
+    // Example: Remove special characters, escape sequences, etc.
+}
+
+// Function to securely handle raw sockets
+void handleRawSocket() {
+    // Implement secure handling of raw sockets
+    // Example: Ensure proper permissions, validate input before sending packets, etc.
+}
+
