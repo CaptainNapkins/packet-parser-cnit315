@@ -9,39 +9,109 @@
 
 #define SNAP_LEN 65535 // Maximum packet size to capture
 #define TIMEOUT_MS 1000 // Timeout in milliseconds for pcap_next_ex
+#define CAPTURE_DURATION 30 // Capture duration in seconds
 
 // Function prototypes
 void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet);
 void capturePackets(const char *interface);
 void modifyAndSendPacket(const u_char *packet, struct pcap_pkthdr packet_header);
 void reconstructPacket(const u_char *packet, struct pcap_pkthdr packet_header);
+void displayMenu(const char *interface);
+void displayCapture(const char *interface);
+void displayICMP(const char *interface);
+void displayUDP(const char *interface);
+void displayTCP(const char *interface);
+void listInterfaces();
+char* selectInterface();
+int startCapture(const char *interface);
+void stopCapture();
 int validateInput(const char *input);
-void sanitizeData(char *data);
-void handleRawSocket();
-int queryInterface();
-char *queryInterface();
 
 int main() {
     // Creates flag to end whole code loop
     int endFlag = 0;
-    // Whole code loop
     while (endFlag == 0) {
-        // Gets user interface result
-        int result = queryInterface();
-        printf("You entered: %d\n", result);
-        // Checks user end program result
-        if (result == 0) {
-            printf("Goodbye.\n");
-            // Sets flag to 1, ending program
-            endFlag = 1;
-        } else {
-            // Specify the network interface to capture packets from
-            const char *interface = "XXX"; // Change this to the right interface
-            // Call capturePackets() to start capturing packets
-            capturePackets(interface);
+        printf("Menu:\n");
+        printf("1. List Interfaces\n");
+        printf("2. Add Interface\n");
+        printf("3. Start Capture\n");
+        printf("4. Exit\n");
+        int choice;
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch(choice) {
+            case 1:
+                listInterfaces();
+                break;
+            case 2:
+                // Implement function to add interface
+                break;
+            case 3: {
+                char *selectedInterface = selectInterface();
+                if (selectedInterface != NULL) {
+                    startCapture(selectedInterface);
+                }
+                break;
+            }
+            case 4:
+                printf("Exiting program.\n");
+                endFlag = 1;
+                break;
+            default:
+                printf("Invalid choice. Please enter a number between 1 and 4.\n");
         }
     }
     return 0;
+}
+
+void displayMenu(const char *interface) {
+    int subMenuChoice;
+    do {
+        printf("Interface: %s\n", interface);
+        printf("Menu:\n");
+        printf("1. Display Whole Capture\n");
+        printf("2. Display ICMP Packets\n");
+        printf("3. Display UDP Packets\n");
+        printf("4. Display TCP Packets\n");
+        printf("5. Go Back\n");
+        printf("Enter your choice: ");
+        scanf("%d", &subMenuChoice);
+        switch(subMenuChoice) {
+            case 1:
+                displayCapture(interface);
+                break;
+            case 2:
+                displayICMP(interface);
+                break;
+            case 3:
+                displayUDP(interface);
+                break;
+            case 4:
+                displayTCP(interface);
+                break;
+            case 5:
+                printf("Going back.\n");
+                break;
+            default:
+                printf("Invalid choice. Please enter a number between 1 and 5.\n");
+        }
+    } while (subMenuChoice != 5);
+}
+
+void displayCapture(const char *interface) {
+    // Implement function to display whole capture
+}
+
+void displayICMP(const char *interface) {
+    // Implement function to display ICMP packets
+}
+
+void displayUDP(const char *interface) {
+    // Implement function to display UDP packets
+}
+
+void displayTCP(const char *interface) {
+    // Implement function to display TCP packets
 }
 
 // Function to capture packets from the specified network interface
@@ -90,11 +160,14 @@ int validateInput(const char *input) {
     return 1; // Placeholder for demonstration
 }
 
-// Function to sanitize data
-void sanitizeData(char *data) {
-    // Implement data sanitization logic here
+void listInterfaces() {
+    // Implement function to list available interfaces
 }
 
+char* selectInterface() {
+    // Implement function to select an interface
+    return NULL;
+}
 // Function to securely handle raw sockets
 void handleRawSocket() {
     // Implement secure handling of raw sockets
