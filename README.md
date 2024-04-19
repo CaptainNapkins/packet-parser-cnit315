@@ -1,12 +1,5 @@
-# packet-parser-cnit315
-This is a place for the CNIT 315 final project. I'm planning on a network packet parser that can output to a file and upload results via some API, perhaps. 
-
-Snappier name is coming soon
-
-## Standard Operating Procedures
-1. All work can be done on branches
-2. When done, commit to branch and push changes
-3. Then open a pull request to be merged into main
+# WireMinnow
+This is the CNIT 315 final project. This network packet parser can output to a file and display results.
 
 ## Usage
 
