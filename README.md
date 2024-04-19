@@ -30,15 +30,7 @@ Snappier name is coming soon
 - libpcap library
 
 ## Authors
-Matthew Graham
-Gabe Samide
-Nathan Geller
-
-## License
-?
-
-## Acknowledgements
-- Special thanks to 
+Matthew Graham, Gabe Samide, and Nathan Geller
 
 
 ## Notes
