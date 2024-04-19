@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <pcap.h>
+
+#define SNAP_LEN 65535 // Maximum packet size to capture
+#define TIMEOUT_MS 1000 // Timeout in milliseconds for pcap_next_ex
+
+// Function prototypes
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet);
+void capturePackets(const char *interface);
+void modifyAndSendPacket(const u_char *packet, struct pcap_pkthdr packet_header);
+
+int main() {
+    
+    const char *interface = "XXX"; // // Specify the network interface to capture packets from, Change this to the right interface
+
+    capturePackets(interface); // Call capturePackets() to start capturing packets
+
+    return 0;
+}
+
+// Function to capture packets from the specified network interface
+void capturePackets(const char *interface) {
+    char errbuf[PCAP_ERRBUF_SIZE]; // Error buffer for libpcap
+    pcap_t *handle; // Packet capture handle
+
+    handle = pcap_open_live(interface, SNAP_LEN, 1, TIMEOUT_MS, errbuf); // Open the network interface for packet capture
+    if (handle == NULL) {
+        fprintf(stderr, "Error opening interface %s: %s\n", interface, errbuf);
+        return;
+    }
+
+    printf("Capturing packets on interface %s...\n", interface);
+
+    pcap_loop(handle, -1, packetHandler, NULL); // Start capturing packets indefinitely
+
+    pcap_close(handle); // Close the packet capture handle when done
+}
+
+void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet) { // Callback function to handle each captured packet
+    printf("Packet captured: Length = %d\n", pkthdr->len); // Process the captured packet here
+
+    modifyAndSendPacket(packet, *pkthdr); // Modify and send the packet
+}
+
+void modifyAndSendPacket(const u_char *packet, struct pcap_pkthdr packet_header) { // Function to modify and send the captured packet
+    int raw_socket; // Raw socket descriptor
+    struct sockaddr_in dest_addr; // Destination address structure
+
+    raw_socket = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);  // Create a raw socket
+    if (raw_socket < 0) {
+        perror("Error creating raw socket");
+        return;
+    }
+
+    memset(&dest_addr, 0, sizeof(dest_addr)); // Fill in the destination address structure
+    dest_addr.sin_family = AF_INET;
+    dest_addr.sin_addr.s_addr = inet_addr("X.X.X.X"); // Change this to the destination IP address
+
+    ssize_t bytes_sent = sendto(raw_socket, packet, packet_header.len, 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr)); // Send the packet
+    if (bytes_sent < 0) {
+        perror("Error sending packet");
+    } else {
+        printf("Packet sent successfully.\n");
+    }
+
+    close(raw_socket); // Close the raw socket
+}
