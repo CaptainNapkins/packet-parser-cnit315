@@ -1,8 +1,26 @@
 #include <stdio.h>
 #include <string.h> 
-#include <stdlib.h> )
+#include <stdlib.h> 
 
 char *queryInterface(); // Returns pointer to 'char *'
+
+void filter_menu () {
+    puts("Protocol to Capture");
+    puts("1. TCP");
+    puts("2. UDP");
+    puts("3. ICMP");
+    puts("4. All");
+    printf("Enter protocol choice: ");
+}
+
+void print_initial_menu() {
+    puts("Main Menu");
+    puts("1. Choose Interface to Listen");
+    puts("2. View Capture");
+    puts("3. Quit");
+    printf("Please enter a number (1-2): ");
+
+}
 
 int main() {
     int choice1;
@@ -10,6 +28,7 @@ int main() {
     int endFlag = 0;
     // sets capture status
     int capturing;
+    int packet_num;
     char *interface;
     // Whole code loop
     while (endFlag == 0) {
@@ -19,6 +38,8 @@ int main() {
         switch (choice1) {
             case 1: {
                     interface = queryInterface();
+                    endFlag = 1;
+                    capturing = 1;
                     break;
                 }
             case 2: {
@@ -34,20 +55,40 @@ int main() {
     
     }
 
-    // Begin while loop here for capturing stuff
+    int protocol_choice;
+    // testing a nested loop here
+    while (capturing) {
+        int running = 1;
+        char start[2];
+        while (running) {
+            printf("How many packets would you like to capture: ");
+            scanf("%d", &packet_num);
 
+            filter_menu();
+            scanf("%d", &protocol_choice);
+
+            printf("Start capture? [y/n]: ");
+            scanf("%s", start);
+            if (!strcmp(start, "y")) {
+                puts("bruh");
+                capturing = 0;
+                break;
+            }
+            // start the capture
+        }
+
+        
+    }
+
+    // have logic to analyze/print capture here
+    // Can have func that takes that global malloc buff and prints each packet
+    // depending on protocol 
+
+    // Can also write all of em to a file depending on protocol
     printf("%s\n", interface);
     return 0;
 }
 
-void print_initial_menu() {
-    puts("Main Menu");
-    puts("1. Choose Interface to Listen");
-    puts("2. View Capture");
-    puts("3. Quit");
-    printf("Please enter a number (1-2): ");
-
-}
 // Queries for the user's requested interface
 char *queryInterface() {
     // Creates usr var for use in for (otherwise out of scope)
