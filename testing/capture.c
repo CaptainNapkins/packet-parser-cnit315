@@ -138,29 +138,3 @@ void my_callback(u_char *useless,const struct pcap_pkthdr* pkthdr,const u_char* 
     packet_ct++;
 }
 
-int main(int argc,char **argv) { 
-    int i;
-    char *dev = "eth0";
-    char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t* descr;
-
-    if(argc != 2){ fprintf(stdout,"Usage: %s numpackets\n",argv[0]);return 0;}
-
-    // Open the interface to recieve packets
-    descr = pcap_open_live(dev,BUFSIZ,0,-1,errbuf);
-    if(descr == NULL)
-    { printf("pcap_open_live(): %s\n",errbuf); exit(1); }
-
-
-    // Pcap loop function that calls our callback function
-    // everytime a packet is recieved
-    pcap_loop(descr,atoi(argv[1]),my_callback,NULL);
-
-    puts("GOING GLOBAL: Printing first packet from the global malloced chunk");
-    printf("Src IP is %s:%d\n", packet_buf[0].packet.tcp.ip_packet.srcip, packet_buf[0].packet.tcp.src_port);
-    printf("DST IP is %s:%d\n", packet_buf[0].packet.tcp.ip_packet.dstip, packet_buf[0].packet.tcp.dst_port);
-
-
-    fprintf(stdout,"\nDone processing packets... wheew!\n");
-    return 0;
-}
