@@ -7,7 +7,7 @@
 char *queryInterface(); // Returns pointer to 'char *'
 // Queries for the user's requested interface
 
-void filter_menu () {
+void filter_menu() {
     puts("Protocol to Capture");
     puts("1. TCP");
     puts("2. UDP");
@@ -21,7 +21,6 @@ void print_initial_menu() {
     puts("1. Choose Interface to Listen");
     puts("2. Quit");
     printf("Please enter a number (1-2): ");
-
 }
 
 void additional_filters_menu() {
@@ -36,154 +35,168 @@ void additional_filters_menu() {
 void display_filters(int display_choice, packet_wrapper *packet_p, int count) {
     switch (display_choice) {
         // src ip filter
-        char ip_to_filter[20];
-        int port_to_filter;
         case 1: {
-                printf("What src IP do you want to filter by? ");
-                scanf("%s", ip_to_filter);
-                filter_src_ip(packet_p, ip_to_filter, count);
-                break;
-            }
+            char ip_to_filter[20];
+            printf("What src IP do you want to filter by? ");
+            scanf("%s", ip_to_filter);
+            filter_src_ip(packet_p, ip_to_filter, count);
+            break;
+        }
         case 2: {
-                printf("What dst IP do you want to filter by? ");
-                scanf("%s", ip_to_filter);
-                filter_src_ip(packet_p, ip_to_filter, count);
-                break;
-            }
+            char ip_to_filter[20];
+            printf("What dst IP do you want to filter by? ");
+            scanf("%s", ip_to_filter);
+            filter_dst_ip(packet_p, ip_to_filter, count);
+            break;
+        }
         case 3: {
-                printf("What src port do you want to filter by? ");
-                scanf("%d", &port_to_filter);
-                filter_src_port(packet_p, port_to_filter, count);
-                break;
-            }
+            int port_to_filter;
+            printf("What src port do you want to filter by? ");
+            scanf("%d", &port_to_filter);
+            filter_src_port(packet_p, port_to_filter, count);
+            break;
+        }
         case 4: {
-                printf("What dst port do you want to filter by? ");
-                scanf("%d", &port_to_filter);
-                filter_dst_port(packet_p, port_to_filter, count);
-                break;
-            }
+            int port_to_filter;
+            printf("What dst port do you want to filter by? ");
+            scanf("%d", &port_to_filter);
+            filter_dst_port(packet_p, port_to_filter, count);
+            break;
+        }
         case 5: {
-                break;
-            }
+            break;
+        }
     }
 }
+
 int main() {
     int choice1;
-    // Ends whole program
-    int endFlag = 0;
-    // sets capture status
+    int endFlag = 0; // Flag to end the program
     int capturing;
     int packet_num;
     char *interface;
 
     // int i;
     // This is an error buffer that ensures libpcap can print errors
-    char errbuf[PCAP_ERRBUF_SIZE];
+     char errbuf[PCAP_ERRBUF_SIZE];
     // a pointer to the pcap handler 
-    pcap_t* descr;
+     pcap_t *descr;
 
-    // Whole code loop
-    while (endFlag == 0) {
+    // Loop to select interface or quit
+    while (!endFlag) {
         print_initial_menu();
-        scanf("%d", &choice1);
-        
+        if (scanf("%d", &choice1) != 1) {
+            printf("Error: Invalid input.\n");
+            exit(EXIT_FAILURE);
+        }
+
         switch (choice1) {
             case 1: {
-                    interface = queryInterface();
-                    endFlag = 1;
-                    capturing = 1;
-                    break;
-                }
+                interface = queryInterface();
+                endFlag = 1;
+                capturing = 1;
+                break;
+            }
             case 2: {
-                    capturing = 1;
-                    endFlag = 1;
-                    break;
-                }
-            case 3: {
-                    endFlag = 1;
-                    break;
-                }
+                endFlag = 1;
+                break;
+            }
+            default: {
+                printf("Error: Invalid choice.\n");
+                exit(EXIT_FAILURE);
+            }
         }
-    
     }
 
     int protocol_choice;
-    // testing a nested loop here
+    // Nested loop for packet capturing
     while (capturing) {
-        int running = 1;
         char start[2];
-        while (running) {
+        while (1) {
             printf("How many packets would you like to capture: ");
-            scanf("%d", &packet_num);
+            if (scanf("%d", &packet_num) != 1) {
+                printf("Error: Invalid input.\n");
+                exit(EXIT_FAILURE);
+            }
 
             filter_menu();
-            scanf("%d", &protocol_choice);
+            if (scanf("%d", &protocol_choice) != 1) {
+                printf("Error: Invalid input.\n");
+                exit(EXIT_FAILURE);
+            }
 
             printf("Start capture? [y/n]: ");
-            scanf("%s", start);
+            if (scanf("%s", start) != 1) {
+                printf("Error: Invalid input.\n");
+                exit(EXIT_FAILURE);
+            }
             if (!strcmp(start, "y")) {
-                puts("bruh");
+                puts("Starting capture...");
                 capturing = 0;
                 break;
             }
         }
     }
-    // Based on protocol choice, function here to compile filter
 
+    // Based on protocol choice, function here to compile filter
+ 
+ 
     // have logic to analyze/print capture here
+    // Open interface for capturing
     // Can have func that takes that displays each packet 
     // depending on protocol 
-    
     printf("Capturing on %s...\n", interface);
     descr = pcap_open_live(interface, BUFSIZ, 0, -1, errbuf);
     if (descr == NULL) {
-        printf("pcap_open_live failed: %s\n", errbuf);
-        exit(1);
+        printf("Error: %s\n", errbuf);
+        exit(EXIT_FAILURE);
     }
 
+    // Capture packets
     pcap_loop(descr, packet_num, my_callback, NULL);
-    
-    // puts("GOING GLOBAL: Printing first packet from the global malloced chunk");
-    // printf("Src IP is %s:%d\n", packet_buf[0].packet.tcp.ip_packet.srcip, packet_buf[0].packet.tcp.src_port);
-    // printf("DST IP is %s:%d\n", packet_buf[0].packet.tcp.ip_packet.dstip, packet_buf[0].packet.tcp.dst_port);
 
+    // Additional filters
     int additional_filter_choice;
     int filtering = 1;
     while (filtering) {
         additional_filters_menu();
-        scanf("%d", &additional_filter_choice);
+        if (scanf("%d", &additional_filter_choice) != 1) {
+            printf("Error: Invalid input.\n");
+            exit(EXIT_FAILURE);
+        }
         display_filters(additional_filter_choice, packet_buf, packet_num);
         if (additional_filter_choice == 5) {
             break;
         }
     }
 
+    // Cleanup
     puts("Goodbye!");
     free(packet_buf);
+    pcap_close(descr);
+
     return 0;
 }
 
-//Queries for the user's requested interface
+// Queries for the user's requested interface
 char *queryInterface() {
-    // Creates usr var for use in for (otherwise out of scope)
     char *usr = NULL;
-    // Runs 3 times to attempt memory alloc, if it fails 3 times ends program
     for (int c = 3; c > 0; c--) {
-        // creates dynamic memory for the usr response
-        // declares usr to address of first char in malloc's 50 char string
-        usr = malloc(sizeof(char) * 50); // sizeof(char) gets size per char (1 byte) malloc allocates * 50 times
-        if (usr == NULL) { // If alloc is NULL, nothing was allocated meaning a failiure
-            printf("Memory allocation failed\nRetrying...\n"); 
+        usr = malloc(sizeof(char) * 50);
+        if (usr == NULL) {
+            printf("Memory allocation failed\nRetrying...\n");
+        } else {
+            break;
         }
-        else { break; } // Successful alloc exits for
     }
-    // Ends program if memory alloc fails 3 times, returns 1
-    if (usr == NULL) { printf("Memory allocation failed\nEnding.\n"); exit(1);}
-
-    /* WARNING - The printf line below will malfunction if typing spaces into asnwers,
-       it will return every word for every space entered. I didn't fix it cause the
-       interface names' format is uinknown right now. Just making a note of it now. */
-    printf("Enter an interface (q to quit): "); /*THIS LINE*/
-    scanf("%s", usr);
+    if (usr == NULL) {
+        printf("Memory allocation failed\nEnding.\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("Enter an interface (q to quit): ");
+    if (scanf("%s", usr) != 1) {
+        printf("Error: Failed to read interface name.\n");
+        exit(EXIT_FAILURE);
+    }
     return usr;
 }
